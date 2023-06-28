@@ -1,9 +1,10 @@
 > **Note**
->
-> 2023.5.27 对Gradio依赖进行了调整，Fork并解决了官方Gradio的若干Bugs。请及时**更新代码**并重新更新pip依赖。安装依赖时，请严格选择`requirements.txt`中**指定的版本**： 
 > 
-> `pip install -r requirements.txt`
->
+> 本项目想要做一个更加强大的科研人员使用的`大一统GPT`。
+> 
+> 添加了各种角色prompt，使得将聊天的一些功能的同时整合进来，也可以自己再`prompts.json`中添加需要的prompt， 也可以切换prompt语言。
+> 
+> 下一步将要添加 mask面具，利用一些已经有对话及继续聊天，如实现`copilot`。
 
 # <img src="docs/logo.png" width="40" > GPT 学术优化 (GPT Academic)
 
