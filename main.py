@@ -36,7 +36,6 @@ def main():
     # prompt插件
     from prompt_functional import get_prompt_functions
     prompt_fns = get_prompt_functions()
-    
     functional.update(prompt_fns)
     
     # 面具插件
@@ -95,11 +94,11 @@ def main():
                     with gr.Row():
                         switchy_bt_pt = gr.Button(r"请先从角色列表中选择", variant="secondary")
                 with gr.Accordion("面具功能区", open=True) as area_mask_fn:
-                    dropdown_fn_list = [k for k in mask_fns.keys() if not mask_fns[k].get("AsButton", True)]
+                    dropdown_fn_list = [k for k in mask_fns.keys()]
                     with gr.Row():
                         dropdown_mask = gr.Dropdown(dropdown_fn_list, value=r"打开面具列表", label="").style(container=False)
                     with gr.Row():
-                        switchy_bta = gr.Button(r"请先从面具列表中选择", variant="secondary")
+                        switchy_mask = gr.Button(r"请先从面具列表中选择", variant="secondary")
                 with gr.Accordion("函数插件区", open=True) as area_crazy_fn:
                     with gr.Row():
                         gr.Markdown("注意：以下“红颜色”标识的函数插件需从输入区读取路径作为参数.")
@@ -154,7 +153,7 @@ def main():
             ret.update({plugin_advanced_arg: gr.update(visible=("插件参数区" in a))})
             if "底部输入区" in a: ret.update({txt: gr.update(value="")})
             return ret
-        checkboxes.select(fn_area_visibility, [checkboxes], [area_basic_fn, area_prompt_fn, area_mask_fn,area_crazy_fn, area_input_primary, area_input_secondary, txt, txt2, clearBtn, clearBtn2, plugin_advanced_arg] )
+        checkboxes.select(fn_area_visibility, [checkboxes], [area_basic_fn, area_prompt_fn, area_mask_fn, area_crazy_fn, area_input_primary, area_input_secondary, txt, txt2, clearBtn, clearBtn2, plugin_advanced_arg] )
         # 整理反复出现的控件句柄组合
         input_combo = [cookies, max_length_sl, md_dropdown, txt, txt2, top_p, temperature, chatbot, history, system_prompt, plugin_advanced_arg]
         output_combo = [cookies, chatbot, history, status]
@@ -199,6 +198,14 @@ def main():
             return ret
         dropdown_pt.select(on_prompt_dropdown_changed, [dropdown_pt], [switchy_bt_pt] )
         
+        # 面具函数
+        def on_mask_dropdown_changed(k):
+            variant = "secondary"
+            ret = {switchy_mask: gr.update(value=k, variant=variant)}
+            return ret
+        dropdown_mask.select(on_mask_dropdown_changed, [dropdown_mask], [switchy_mask] )
+        
+        
         def on_md_dropdown_changed(k):
             return {chatbot: gr.update(label="当前模型："+k)}
         md_dropdown.select(on_md_dropdown_changed, [md_dropdown], [chatbot] )
@@ -210,8 +217,16 @@ def main():
         click_handle = switchy_bt.click(route,[switchy_bt, *input_combo, gr.State(PORT)], output_combo)
         click_handle.then(on_report_generated, [cookies, file_upload, chatbot], [cookies, file_upload, chatbot])
         cancel_handles.append(click_handle)
-        click_handle = switchy_bt_pt.click(fn=ArgsGeneralWrapper(predict), inputs=[*input_combo, gr.State(True),switchy_bt_pt], outputs=output_combo)
+        click_handle = switchy_bt_pt.click(fn=ArgsGeneralWrapper(predict), inputs=[*input_combo, gr.State(True), switchy_bt_pt], outputs=output_combo)
         cancel_handles.append(click_handle)
+        def route_mask(k, *args, **kwargs):
+            if k in [r"打开面具列表", r"请先从面具列表中选择"]: return
+            if k in mask_fns.keys():
+                yield from ArgsGeneralWrapper(mask_fns[k]["Function"])(*args, **kwargs)
+        click_handle = switchy_mask.click(route_mask,[switchy_mask, *input_combo,  switchy_mask], output_combo)
+        click_handle.then(on_report_generated, [cookies, file_upload, chatbot], [cookies, file_upload, chatbot])
+        cancel_handles.append(click_handle) 
+        
         # 终止按钮的回调函数注册
         stopBtn.click(fn=None, inputs=None, outputs=None, cancels=cancel_handles)
         stopBtn2.click(fn=None, inputs=None, outputs=None, cancels=cancel_handles)
