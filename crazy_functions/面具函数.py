@@ -24,13 +24,9 @@ def 面具函数(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt
     history = []    # 清空历史，以免输入溢出
     
     sys_prompt = ""
-    # more_prompt = ""
     idx = 0 
     for i in context:
         if i['role'] == 'system':
-            # if sys_prompt != "":
-            #     more_prompt = i['content']
-            #     continue
             sys_prompt = sys_prompt +  i['content']
         elif i['role'] == 'user':
             if idx %2 == 0:
@@ -51,8 +47,6 @@ def 面具函数(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt
     print(history)
     if history != []:
         chatbot.append(history)
-    # if more_prompt != "":
-    #     chatbot.append(("后续呢？","请在系统提示区域加入一下文本：" + more_prompt) )
     print(chatbot)
     yield from update_ui(chatbot=chatbot, history=history) # 刷新界面 # 由于请求gpt需要一段时间，我们先及时地做一次界面更新
     print(history)
