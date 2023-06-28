@@ -1,18 +1,16 @@
-from toolbox import HotReload  # HotReload 的意思是热更新，修改函数插件后，不需要重启程序，代码直接生效
+import json
 
-
-def get_prompt_functions():
-    ###################### 第一组插件 ###########################
-    from crazy_functions.prompt函数 import prompt函数
-    function_plugins = {
-        "prompt_test": {
-            "Prefix":   r"Below is a paragraph from an academic paper. Polish the writing to meet the academic style, " +
-                        r"improve the spelling, grammar, clarity, concision and overall readability. When necessary, rewrite the whole sentence. " +
-                        r"Furthermore, list all modification and explain the reasons to do so in markdown table." + "\n\n",
-            # 后语
+def get_prompt_functions(prompts_path = r'./prompts.json', language = "cn"):
+    ###################### 加载prompt ###########################
+    function_plugins = {}
+    with open(prompts_path, errors='ignore') as f:
+        prompts = json.load(f)[language]
+    for i in prompts:
+        function_plugins[i[0]] = {
+            "Prefix":  i[1],
             "Suffix":   r"",
             "Color":    r"secondary",    # 按钮颜色
-        },
-
-    }
+            "Visible": False, # 不在固定按钮区域
+        }
+    
     return function_plugins

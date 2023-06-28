@@ -15,7 +15,7 @@ if USE_PROXY:
     proxies = {
         #          [协议]://  [地址]  :[端口]
         "http":  "http://127.0.0.1:7890",  # 再例如  "http":  "http://127.0.0.1:7890",
-        "https": "http://127.0.0.1:7890",  # 再例如  "https": "http://127.0.0.1:7890",
+        "https": "https://127.0.0.1:7890",  # 再例如  "https": "http://127.0.0.1:7890",
     }
 else:
     proxies = None

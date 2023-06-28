@@ -37,6 +37,8 @@ def main():
     from prompt_functional import get_prompt_functions
     prompt_fns = get_prompt_functions()
     
+    functional.update(prompt_fns)
+    
     # 面具插件
     from mask_functional import get_mask_functions
     mask_fns = get_mask_functions()

@@ -129,11 +129,7 @@ def predict(inputs, llm_kwargs, plugin_kwargs, chatbot, history=[], system_promp
     if additional_fn is not None:
         import core_functional
         importlib.reload(core_functional)    # 热更新prompt
-        import prompt_functional
-        importlib.reload(prompt_functional)    # 热更新prompt
         core_functional = core_functional.get_core_functions()
-        prompt_functional = prompt_functional.get_prompt_functions()
-        core_functional.update(prompt_functional)
         if "PreProcess" in core_functional[additional_fn]: inputs = core_functional[additional_fn]["PreProcess"](inputs)  # 获取预处理函数（如果有的话）
         inputs = core_functional[additional_fn]["Prefix"] + inputs + core_functional[additional_fn]["Suffix"]
 
